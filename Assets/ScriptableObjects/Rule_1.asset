@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c03d8f8feab8c44b947e9972c8f7437, type: 3}
+  m_Name: Rule_1
+  m_EditorClassIdentifier: 
+  speedMovingPipe: 0.3
+  timeBetweenSpawn: 3
+  farDeathX: 4
+  percent_minHeightPipe: 0.2
+  percent_spaceBetweenPipe: 0.7
+  heightGameZone: 1
+  gravityPower: 0.7
+  maxGravitySpeed: 0
+  flyUpPower: 0.6
