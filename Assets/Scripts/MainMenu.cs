@@ -8,13 +8,12 @@ public class MainMenu : MonoBehaviour
 {
     public DataGame dataGame;
 
-    public Toggle marker0;
-    public Toggle marker1;
-    public Toggle action0;
-    public Toggle action1;
+    public Toggle toggle1;
+    public Toggle toggle2;
+    public Toggle toggle3;
     void Start()
     {
-        OnConfigOpen();
+        
     }
 
     // Update is called once per frame
@@ -32,45 +31,38 @@ public class MainMenu : MonoBehaviour
     }
     public void OnConfigOpen()
     {
-        if (dataGame.outputMarker)
-        {
-            marker0.isOn = true;
-            marker1.isOn = false;
-        }
-        else
-        {
-            marker0.isOn = false;
-            marker1.isOn = true;
-        }
         if (dataGame.tapOnScreen)
         {
-            action0.isOn = true;
-            action1.isOn = false;
+            toggle3.isOn = true;
+            toggle1.isOn = false;
+            toggle2.isOn = false;
+        }
+        else if (dataGame.outputMarker)
+        {
+            toggle1.isOn = true;
+            toggle2.isOn = false;
+            toggle3.isOn = false;
         }
         else
         {
-            action0.isOn = false;
-            action1.isOn = true;
+            toggle2.isOn = true;
+            toggle1.isOn = false;
+            toggle3.isOn = false;
         }
     }
-    public void SetMarkerGame0(bool val)
+    public void SetToggle1(bool val)
     {
         dataGame.outputMarker = val;
-        marker1.isOn = !val;
+        dataGame.tapOnScreen = false;
     }
-    public void SetMarkerGame1(bool val)
+    public void SetToggle2(bool val)
     {
-        dataGame.outputMarker = !val;
-        marker1.isOn = val;
-    }
-    public void SetActionGame0(bool val)
-    {
-        dataGame.tapOnScreen = val;
-        action1.isOn = !val;
-    }
-    public void SetActionGame1(bool val)
-    {
+        dataGame.outputMarker = false;
         dataGame.tapOnScreen = !val;
-        action0.isOn = !val;
+    }
+    public void SetToggle3(bool val)
+    {
+        dataGame.outputMarker = false;
+        dataGame.tapOnScreen = val;
     }
 }

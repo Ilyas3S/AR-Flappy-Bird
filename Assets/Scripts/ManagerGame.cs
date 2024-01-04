@@ -13,10 +13,24 @@ public class ManagerGame : MonoBehaviour
     {
         get { return isTargetFound; }
         set {
-            isTargetFound = value; 
-            if (!value && stateGame == StateGame.isPlaying)
+            if (isTargetFound != value)
             {
-                Pause();
+                isTargetFound = value;
+                if (!value)
+                    panelInstruction.SetActive(true);
+                else if (value && !(stateGame == StateGame.isNoGame || stateGame == StateGame.isPreStart))
+                    panelInstruction.SetActive(false);
+
+                if (!value && !(stateGame == StateGame.isNoGame || stateGame == StateGame.isPreStart))
+                {
+                    SetPause(true);
+                    panelInstruction.SetActive(true);
+                    AutoSetInstruction();
+                }
+                else if (value && stateGame == StateGame.isNoGame)
+                {
+                    PreStartGame();
+                }
             }
         }
     }
@@ -24,7 +38,7 @@ public class ManagerGame : MonoBehaviour
     public Transform parentPipes;
 
     public DataGame dataGame;
-    public StateGame stateGame = StateGame.isPreStart;
+    public StateGame stateGame = StateGame.isNoGame;
     public ManagerPipes managerPipes;
     
     public Transform playerSpawn;
@@ -32,13 +46,17 @@ public class ManagerGame : MonoBehaviour
     public Transform gameOverPanel;
     public GameObject screenDie;
     public TMPro.TextMeshProUGUI tmpScore;
-    public TMPro.TextMeshProUGUI scorePanel;
-    public TMPro.TextMeshProUGUI bestScorePanel;
+    public Text scorePanel;
+    public Text bestScorePanel;
     public GameObject goPauseBtn;
 
     public Transform markerPipes;
     public Transform groundplane;
     public GameObject planeFinder;
+
+    public GameObject panelInstruction;
+    public Text instruction;
+    public GameObject text_GameOver;
 
     private int score = 0;
     public int Score {  get { return score; } set {  score = value; UpdateScore(); } }
@@ -61,8 +79,10 @@ public class ManagerGame : MonoBehaviour
     }
     void Start()
     {
+        gameOverPanel.gameObject.SetActive(false);
+        goPauseBtn.SetActive(false);
+        stateGame = StateGame.isNoGame;
         InitVuforia();
-        PreStartGame();
     }
     private void Update()
     {
@@ -87,6 +107,7 @@ public class ManagerGame : MonoBehaviour
             transform.parent.parent = groundplane;
             transform.parent.localPosition = Vector3.up * 0.5f;
         }
+        AutoSetInstruction();
     }
     void UpdateScore()
     {
@@ -95,20 +116,30 @@ public class ManagerGame : MonoBehaviour
     }
     public void PreStartGame ()
     {
+        panelInstruction.SetActive(true);
+        if (dataGame.tapOnScreen)
+        {
+            SetInstruction(3);
+        } else
+        {
+            SetInstruction(2);
+        }
         stateGame = StateGame.isPreStart;
         managerPipes.PreStartGame();
         Bird.Instance.PreStartGame(playerSpawn.position);
-        gameOverPanel.gameObject.SetActive(false);
         
         score = 0;
         tmpScore.text = score + "";
 
         tmpScore.gameObject.SetActive(true);
+        goPauseBtn.SetActive(true);
+        gameOverPanel.gameObject.SetActive(false);
     }
     public void StartGame () 
     {
         managerPipes.StartGame();
         stateGame = StateGame.isPlaying;
+        panelInstruction.SetActive(false);
     }
     public void EndGame ()
     {
@@ -126,6 +157,7 @@ public class ManagerGame : MonoBehaviour
         bestScorePanel.text = dataGame.bestScore + "";
 
         gameOverPanel.gameObject.SetActive(true);
+        text_GameOver.SetActive(true);
         goPauseBtn.SetActive(false);
         screenDie.SetActive(true);
         
@@ -146,36 +178,63 @@ public class ManagerGame : MonoBehaviour
         }
         
     }
-    public void Pause()
+    public void SetPause(bool flag)
     {
-        stateGame = StateGame.isPaused;
-        Bird.Instance.PauseGame();
-        managerPipes.PauseGame();
-        scorePanel.text = score + "";
-        bestScorePanel.text = dataGame.bestScore + "";
-        gameOverPanel.gameObject.SetActive(true);
-        // Скрытие кнопки "Заново" и "Пауза"
-        // И показ кнопки "Продолжить"
-        // Осуществляется в ивентах клика на самой кнопке
+        if (flag)
+        {
+            stateGame = StateGame.isPaused;
+            Bird.Instance.PauseGame();
+            managerPipes.PauseGame();
+            scorePanel.text = score + "";
+            bestScorePanel.text = dataGame.bestScore + "";
+            gameOverPanel.gameObject.SetActive(true);
+            text_GameOver.SetActive(false);
+        } else
+        {
+            stateGame = StateGame.isPlaying;
+            managerPipes.UnpauseGame();
+            Bird.Instance.UnpauseGame();
+            gameOverPanel.gameObject.SetActive(false);
+            text_GameOver.SetActive(true);
+        }
     }
-    public void Unpause()
+
+    void SetInstruction(int index) 
     {
-        stateGame = StateGame.isPlaying;
-        managerPipes.UnpauseGame();
-        Bird.Instance.UnpauseGame();
-        gameOverPanel.gameObject.SetActive(false);
-        // Скрытие кнопки "Продолжить"
-        // И показ кнопки "Заново" и "Пауза"
-        // Осуществляется в ивентах клика на самой кнопке
+        if (index == 0)
+        {
+            instruction.text = "Наведите камеру на специальный маркер.";
+        } 
+        else if (index == 1)
+        {
+            instruction.text = "Наведите камеру на достаточно широкую неотражающую плоскость. Нажмите на экран, когда появится индикатор. ";
+        } 
+        else if (index == 2)
+        {
+            instruction.text = "Перекройте рукой маркер, чтобы взлететь. Затем быстро уберите руку.";
+        } 
+        else if (index == 3)
+        {
+            instruction.text = "Нажмите на экран, чтобы взлететь.";
+        }
+    }
+    public void AutoSetInstruction()
+    {
+        if (dataGame.outputMarker)
+        {
+            SetInstruction(0);
+        }
+        else
+        {
+            SetInstruction(1);
+        }
     }
     private void OnCollisionEnter(Collision collision)
     {
-        {
             if (stateGame == StateGame.isPlaying && collision.gameObject.CompareTag("Player"))
             {
                 EndGame();
             }
-        }
     }
     public void ExitGame()
     {
