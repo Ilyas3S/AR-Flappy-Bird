@@ -1,4 +1,4 @@
-
+п»ї
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +12,8 @@ public class ManagerGame : MonoBehaviour
     public bool IsTargetFound
     {
         get { return isTargetFound; }
-        set {
+        set
+        {
             if (isTargetFound != value)
             {
                 isTargetFound = value;
@@ -40,9 +41,9 @@ public class ManagerGame : MonoBehaviour
     public DataGame dataGame;
     public StateGame stateGame = StateGame.isNoGame;
     public ManagerPipes managerPipes;
-    
+
     public Transform playerSpawn;
-    
+
     public Transform gameOverPanel;
     public GameObject screenDie;
     public TMPro.TextMeshProUGUI tmpScore;
@@ -59,7 +60,7 @@ public class ManagerGame : MonoBehaviour
     public GameObject text_GameOver;
 
     private int score = 0;
-    public int Score {  get { return score; } set {  score = value; UpdateScore(); } }
+    public int Score { get { return score; } set { score = value; UpdateScore(); } }
 
     private static ManagerGame _instance;
     public static ManagerGame Instance
@@ -86,7 +87,7 @@ public class ManagerGame : MonoBehaviour
     }
     private void Update()
     {
-        
+
     }
 
     void InitVuforia()
@@ -114,20 +115,21 @@ public class ManagerGame : MonoBehaviour
         tmpScore.text = score + "";
         PlayerSounds.Instance.PlayAudio(Audio.ScoreAdd);
     }
-    public void PreStartGame ()
+    public void PreStartGame()
     {
         panelInstruction.SetActive(true);
         if (dataGame.tapOnScreen)
         {
             SetInstruction(3);
-        } else
+        }
+        else
         {
             SetInstruction(2);
         }
         stateGame = StateGame.isPreStart;
         managerPipes.PreStartGame();
         Bird.Instance.PreStartGame(playerSpawn.position);
-        
+
         score = 0;
         tmpScore.text = score + "";
 
@@ -135,13 +137,13 @@ public class ManagerGame : MonoBehaviour
         goPauseBtn.SetActive(true);
         gameOverPanel.gameObject.SetActive(false);
     }
-    public void StartGame () 
+    public void StartGame()
     {
         managerPipes.StartGame();
         stateGame = StateGame.isPlaying;
         panelInstruction.SetActive(false);
     }
-    public void EndGame ()
+    public void EndGame()
     {
         stateGame = StateGame.isEndGame;
         managerPipes.PauseGame();
@@ -160,23 +162,24 @@ public class ManagerGame : MonoBehaviour
         text_GameOver.SetActive(true);
         goPauseBtn.SetActive(false);
         screenDie.SetActive(true);
-        
+
         StartCoroutine(HideScreenDie());
     }
     IEnumerator HideScreenDie()
     {
         Image panel = screenDie.transform.GetChild(0).GetComponent<Image>();
         Color prevColor = new(panel.color.r, panel.color.g, panel.color.b, panel.color.a);
-        for (float i = 1; i <= 50; i++) { 
+        for (float i = 1; i <= 50; i++)
+        {
             yield return new WaitForSeconds(0.01f);
-            panel.color = prevColor - new Color(0,0,0,i/50f);
-            if (i >= 50) {
+            panel.color = prevColor - new Color(0, 0, 0, i / 50f);
+            if (i >= 50)
+            {
                 screenDie.SetActive(false);
                 panel.color = prevColor;
                 break;
             }
         }
-        
     }
     public void SetPause(bool flag)
     {
@@ -189,7 +192,8 @@ public class ManagerGame : MonoBehaviour
             bestScorePanel.text = dataGame.bestScore + "";
             gameOverPanel.gameObject.SetActive(true);
             text_GameOver.SetActive(false);
-        } else
+        }
+        else
         {
             stateGame = StateGame.isPlaying;
             managerPipes.UnpauseGame();
@@ -199,23 +203,23 @@ public class ManagerGame : MonoBehaviour
         }
     }
 
-    void SetInstruction(int index) 
+    void SetInstruction(int index)
     {
         if (index == 0)
         {
-            instruction.text = "Наведите камеру на специальный маркер.";
-        } 
+            instruction.text = "РќР°РІРµРґРёС‚Рµ РєР°РјРµСЂСѓ РЅР° СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РјР°СЂРєРµСЂ (РёР·РѕР±СЂР°Р¶РµРЅРёРµ СЃ РїС‚РёС‡РєРѕР№).";
+        }
         else if (index == 1)
         {
-            instruction.text = "Наведите камеру на достаточно широкую неотражающую плоскость. Нажмите на экран, когда появится индикатор. ";
-        } 
+            instruction.text = "РќР°РІРµРґРёС‚Рµ РєР°РјРµСЂСѓ РЅР° РЅРµРѕС‚СЂР°Р¶Р°СЋС‰СѓСЋ С€РёСЂРѕРєСѓСЋ РїР»РѕСЃРєРѕСЃС‚СЊ. РќР°Р¶РјРёС‚Рµ РЅР° СЌРєСЂР°РЅ, РєРѕРіРґР° РїРѕСЏРІРёС‚СЃСЏ РёРЅРґРёРєР°С‚РѕСЂ";
+        }
         else if (index == 2)
         {
-            instruction.text = "Перекройте рукой маркер, чтобы взлететь. Затем быстро уберите руку.";
-        } 
+            instruction.text = "Р§С‚РѕР±С‹ РїС‚РёС†Р° РІР·Р»РµС‚РµР»Р°, РїРµСЂРµРєСЂРѕР№С‚Рµ СЂСѓРєРѕР№ Р±РѕР»СЊС€СѓСЋ С‡Р°СЃС‚СЊ РјР°СЂРєРµСЂР°. РџРѕС‚РѕРј Р±С‹СЃС‚СЂРѕ СѓР±РµСЂРёС‚Рµ СЂСѓРєСѓ.";
+        }
         else if (index == 3)
         {
-            instruction.text = "Нажмите на экран, чтобы взлететь.";
+            instruction.text = "Р§С‚РѕР±С‹ РїС‚РёС†Р° РІР·Р»РµС‚РµР»Р°, РЅР°Р¶РјРёС‚Рµ РЅР° СЌРєСЂР°РЅ";
         }
     }
     public void AutoSetInstruction()
@@ -231,10 +235,10 @@ public class ManagerGame : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-            if (stateGame == StateGame.isPlaying && collision.gameObject.CompareTag("Player"))
-            {
-                EndGame();
-            }
+        if (stateGame == StateGame.isPlaying && collision.gameObject.CompareTag("Player"))
+        {
+            EndGame();
+        }
     }
     public void ExitGame()
     {
@@ -242,7 +246,7 @@ public class ManagerGame : MonoBehaviour
 
     }
 }
- public enum StateGame
+public enum StateGame
 {
     isNoGame = 0,
     isPreStart = 1,

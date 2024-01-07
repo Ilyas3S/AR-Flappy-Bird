@@ -8,7 +8,7 @@ public class Bird : MonoBehaviour
 {
     public DataGame dataGame;
     public RuleGame ruleGame;
-    
+
     public float k_rotation;
     Rigidbody rb;
     Animator animator;
@@ -54,7 +54,7 @@ public class Bird : MonoBehaviour
             vuBtnObject.GetComponent<VirtualButtonBehaviour>().RegisterOnButtonPressed(UpdateVuButton);
         }
     }
-    
+
 
     void Update()
     {
@@ -63,7 +63,6 @@ public class Bird : MonoBehaviour
             UpdateFly?.Invoke();
             UpdateFall();
             UpdateRotation();
-            //Debug.Log(transform.rotation);
         }
     }
     void UpdateFall()
@@ -71,17 +70,13 @@ public class Bird : MonoBehaviour
         if (ManagerGame.Instance.stateGame == StateGame.isPlaying)
         {
             float curFall = ruleGame.gravityPower * Time.deltaTime;
-            rb.velocity += curFall * - ManagerGame.Instance.transform.up;
-
-            //transform.rotation = Quaternion.Euler(rb.velocity);
+            rb.velocity += curFall * -ManagerGame.Instance.transform.up;
         }
     }
     public void FlyUp()
     {
         Vector3 velocity = ManagerGame.Instance.transform.up * ruleGame.flyUpPower;
         rb.velocity = velocity;
-        //transform.rotation = Quaternion.Euler(-ruleGame.flyUpPower * k_rotation * transform.forward);
-        //Debug.Log(transform.rotation);
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -169,7 +164,6 @@ public class Bird : MonoBehaviour
                     break;
             }
             accessVuButton = false;
-            Debug.Log(DateTime.Now.ToString() + " " + accessVuButton);
             StartCoroutine(BlockAccessVuButton());
         }
     }
